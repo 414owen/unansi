@@ -17,6 +17,7 @@ count() {
 run() {
   bytes=$(count "$1" "$2")
   echo "bytes: $(fmt_bytes "${bytes}")"
+  echo "First line of input: $1"$'\033[0m'
   echo "First line of output: $(echo "$1" | ./unansi)"
   seconds="$(yes "$1" | head -n "$2" | command time -f '%e' ./unansi 2>&1 > /dev/null)"
   echo "Took ${seconds}s"
@@ -25,8 +26,8 @@ run() {
 }
 
 echo "No escapes"
-run "test123123123123123123123123123123123123123213" 10000000
+run "test123123123123123123123123123123123123123213" 100000000
 
 echo
 echo "Lots of escapes"
-run $'\u001B[0;31mtest\u001B[0;31m2312312\u001B[0;31m312312\u001B[0;31m3' 10000000
+run $'\u001B[0;31mtest\u001B[0;32m23123\u001B[0;33m123\u001B[0;34m123123' 100000000
