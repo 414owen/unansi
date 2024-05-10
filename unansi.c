@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define BUF_SIZE (4096 * 8)
+#define HALF_BUF_SIZE (4096 * 4)
+#define BUF_SIZE (HALF_BUF_SIZE * 2)
 
 int stdin_fd;
 size_t offset;
@@ -56,6 +57,7 @@ fill_buffer() {
 
 int main(void) {
   stdin_fd = fileno(stdin);
+  int stdout_fd = fileno(stdout);
 
 start_normal_chunk:
   fflush(stdout);
@@ -64,7 +66,12 @@ start_normal:
   {
     size_t start = offset;
     char c = skip_until_control();
-    fwrite(&buffer[start], 1, offset - start, stdout);
+    if (offset - start >= HALF_BUF_SIZE) {
+      fflush(stdout);
+      write(stdout_fd, &buffer[start], offset - start);
+    } else {
+      fwrite(&buffer[start], 1, offset - start, stdout);
+    }
     switch (c) {
       case 0: goto start_normal_chunk;
       case 0x1b: goto start_escape;
