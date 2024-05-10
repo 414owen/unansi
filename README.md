@@ -16,5 +16,7 @@ $ <something> | ./unansi
 
 ## Performance
 
-Without escapes: ~165MiB/s
-It's actually faster with escapes, because it has to output less.
+With escapes: ~750MiB/s
+Without escapes: ~1.3GiB/s
+
+This was calculated by user process time, not wall time, but both input and output is buffered.
