@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Build
-        run: "cl /Wall /link /out:unansi.exe"
+        run: "cl /Wall /link unansi.c /out:unansi.exe"
 
   # build_linux:
   #   runs-on: ["ubuntu-latest"]
