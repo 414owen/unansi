@@ -15,9 +15,9 @@ jobs:
           - os: "macos-latest-large"
             arch: amd64
             out: unansi
-          - os: "macos-latest-xlarge"
-            arch: arm64
-            out: unansi
+          # - os: "macos-latest-xlarge"
+          #   arch: arm64
+          #   out: unansi
           - os: "windows-latest"
             arch: amd64
             out: unansi.exe
