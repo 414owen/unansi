@@ -33,6 +33,12 @@ fill_buffer(struct state *restrict state) {
 static inline void
 write_out(struct state *restrict state, size_t start) {
   if (state->offset - start >= HALF_BUF_SIZE) {
+    // This branch avoids the excess buffering of using stdout as a
+    // FILE*, generally in the cases where there's lots of input with
+    // no ANSI codes.
+    // I've tried making the `fflush` conditional on a `dirty` flag,
+    // but that seems to have no effect on performance. Presumably
+    // this is happening under the hood anyway.
     fflush(stdout);
     write(state->stdout_fd, &state->buffer[start], state->offset - start);
   } else {
