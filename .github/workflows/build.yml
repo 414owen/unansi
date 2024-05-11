@@ -10,6 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ilammy/msvc-dev-cmd@v1
-      - name: Build something requiring CL.EXE
-        run: |
-          cl /Wall /link /out:unansi.exe
+      - name: Build
+        run: "cl /Wall /link /out:unansi.exe"
+  build_windows:
+    runs-on: ["ubuntu-latest"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: "gcc -Wall unansi.c -o unansi"
