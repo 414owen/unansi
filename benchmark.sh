@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+progs="bc yes wc head"
+
+for prog in $progs; do
+  if [ ! command -v ${prog} &> /dev/null ]; then
+    echo "This script requires '${prog}' to be installed"
+  fi
+done
+
 fmt_bytes() {
   local i=${1:-0} d="" s=0 S=("Bytes" "KiB" "MiB" "GiB" "TiB" "PiB" "EiB" "YiB" "ZiB")
   while ((i > 1024 && s < ${#S[@]}-1)); do
