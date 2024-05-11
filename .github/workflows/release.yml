@@ -18,9 +18,6 @@ jobs:
           - os: "macos-13"
             arch: amd64
             out: unansi
-          # - os: "macos-latest-xlarge"
-          #   arch: arm64
-          #   out: unansi
           - os: "windows-latest"
             arch: amd64
             out: unansi.exe
@@ -34,10 +31,14 @@ jobs:
       - name: Build
         if: runner.os != 'Windows'
         run: "cc -Wall -O2 unansi.c -o ${{ matrix.out }}"
+      - name: Set env
+        run: |
+          echo "os='$(tr '[:upper:]' '[:lower:]' <<< '${{ runner.os }}')'
+          arch='$(tr '[:upper:]' '[:lower:]' <<< '${{ runner.arch }}')'" >> $GITHUB_ENV
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ matrix.out }}
-          asset_name: unansi ${{ runner.os }} ${{ runner.arch }}
+          asset_name: "unansi-${{ env.os }}-${{ env.arch }}"
           tag: ${{ github.ref }}
