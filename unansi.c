@@ -13,73 +13,76 @@
 #define HALF_BUF_SIZE (4096 * 4)
 #define BUF_SIZE (HALF_BUF_SIZE * 2)
 
-int stdin_fd;
-int stdout_fd;
-size_t offset;
-size_t amt;
-char buffer[BUF_SIZE];
+struct state {
+  size_t offset;
+  size_t amt;
+  char buffer[BUF_SIZE];
+  int stdin_fd;
+  int stdout_fd;
+};
 
-static void
-fill_buffer() {
-  offset = 0;
-  amt = read(stdin_fd, buffer, BUF_SIZE);
-  if (amt == 0) {
+static inline void
+fill_buffer(struct state *restrict state) {
+  state->offset = 0;
+  state->amt = read(state->stdin_fd, state->buffer, BUF_SIZE);
+  if (state->amt == 0) {
     exit(0);
   }
 }
 
-static void
-write_out(size_t start) {
-  if (offset - start >= HALF_BUF_SIZE) {
+static inline void
+write_out(struct state *restrict state, size_t start) {
+  if (state->offset - start >= HALF_BUF_SIZE) {
     fflush(stdout);
-    write(stdout_fd, &buffer[start], offset - start);
+    write(state->stdout_fd, &state->buffer[start], state->offset - start);
   } else {
-    fwrite(&buffer[start], 1, offset - start, stdout);
+    fwrite(&state->buffer[start], 1, state->offset - start, stdout);
   }
 }
 
 int main(void) {
-  stdin_fd = fileno(stdin);
-  stdout_fd = fileno(stdout);
+  struct state state = {
+    .stdin_fd = fileno(stdin),
+    .stdout_fd = fileno(stdout),
+    .offset = 0,
+    .amt = 0,
+  };
 
 start_normal_chunk:
   fflush(stdout);
-  fill_buffer();
+  fill_buffer(&state);
 start_normal:
   {
-    size_t start = offset;
-    for (; offset < amt; offset++) {
-      char c = buffer[offset];
+    size_t start = state.offset;
+    for (; state.offset < state.amt; state.offset++) {
+      char c = state.buffer[state.offset];
       switch (c) {
         case 0x07: // bel
         case 0x08: // backspace
         case 0x0c: // form feed
         case 0x7f: // delete
-          write_out(start);
+          write_out(&state, start);
           goto start_normal;
         case 0x1b: // escape
-          write_out(start);
+          write_out(&state, start);
           goto start_escape;
         default:
           continue;
       }
     }
-
-    write_out(start);
+    write_out(&state, start);
     goto start_normal_chunk;
   }
 
 start_escape_chunk:
   fflush(stdout);
-  fill_buffer();
+  fill_buffer(&state);
 start_escape:
-  {
-    for (; offset < amt; offset++) {
-      if (isalpha(buffer[offset])) {
-        offset++;
-        goto start_normal;
-      }
+  for (; state.offset < state.amt; state.offset++) {
+    if (isalpha(state.buffer[state.offset])) {
+      state.offset++;
+      goto start_normal;
     }
-    goto start_escape_chunk;
   }
+  goto start_escape_chunk;
 }
