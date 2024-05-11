@@ -1,0 +1,40 @@
+name: Build
+
+on:
+  push:
+    branch: ["*"]
+
+jobs:
+  make-release:
+    strategy:
+      matrix:
+        include:
+          - os: "ubuntu-latest"
+            arch: amd64
+            out: unansi
+          - os: "macos-latest-large"
+            arch: amd64
+            out: unansi
+          - os: "macos-latest-xlarge"
+            arch: arm64
+            out: unansi
+          - os: "windows-latest"
+            arch: amd64
+            out: unansi.exe
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Build
+        if: runner.os == 'Windows'
+        run: "cl /Wall /O2 unansi.c /link /out:${{ matrix.out }}"
+      - name: Build
+        if: runner.os != 'Windows'
+        run: "cc -Wall -O2 unansi.c -o ${{ matrix.out }}"
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ matrix.out }}
+          asset_name: unansi ${{ runner.os }} ${{ runner.arch }}
+          tag: ${{ github.ref }}
