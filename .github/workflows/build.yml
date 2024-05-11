@@ -13,9 +13,14 @@ jobs:
       - name: Build
         run: "cl /Wall unansi.c /link /out:unansi.exe"
 
-  # build_linux:
-  #   runs-on: ["ubuntu-latest"]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Build
-  #       run: "gcc -Wall unansi.c -o unansi"
+  build_linux:
+    strategy:
+      matrix:
+        os: 
+          - "ubuntu-latest"
+          - "macos-latest"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: "cc -Wall unansi.c -o unansi"
