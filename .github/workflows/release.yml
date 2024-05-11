@@ -10,19 +10,16 @@ jobs:
       matrix:
         include:
           - os: "ubuntu-latest"
-            arch: amd64
+            asset_name: unansi-linux-amd64
             out: unansi
           - os: "macos-14"
-            arch: amd64
+            asset_name: unansi-macos-arm64
             out: unansi
           - os: "macos-13"
-            arch: amd64
+            asset_name: unansi-macos-amd64
             out: unansi
-          # - os: "macos-latest-xlarge"
-          #   arch: arm64
-          #   out: unansi
           - os: "windows-latest"
-            arch: amd64
+            asset_name: unansi-windows-amd64
             out: unansi.exe
     runs-on: ${{ matrix.os }}
     steps:
@@ -34,10 +31,20 @@ jobs:
       - name: Build
         if: runner.os != 'Windows'
         run: "cc -Wall -O2 unansi.c -o ${{ matrix.out }}"
+      # - name: Set env
+      #   shell: bash
+      #   run: |
+      #     # Can't use `<<<` or `${VAR,,}`, because windows and macos runners
+      #     # have ancient versions of bash installed.
+      #     os="$(tr '[:upper:]' '[:lower:]' <<< '${{ runner.os }}' )"
+      #     arch="$(tr '[:upper:]' '[:lower:]' <<< '${{ runner.arch }}')"
+      #     ASSET_NAME="unansi-${os}-${arch}" 
+      #     echo "Asset name: ${ASSET_NAME}"
+      #     echo "ASSET_NAME='${ASSET_NAME}'" >> $GITHUB_ENV
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ matrix.out }}
-          asset_name: unansi ${{ runner.os }} ${{ runner.arch }}
+          asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}

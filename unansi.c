@@ -74,7 +74,6 @@ start_escape_chunk:
   fill_buffer();
 start_escape:
   {
-    size_t start = offset;
     for (; offset < amt; offset++) {
       if (isalpha(buffer[offset])) {
         offset++;
