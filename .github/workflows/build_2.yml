@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: ["*"]
+    branch: ["*"]
 
 jobs:
   build_windows:
