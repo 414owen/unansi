@@ -12,7 +12,10 @@ jobs:
           - os: "ubuntu-latest"
             arch: amd64
             out: unansi
-          - os: "macos-latest-large"
+          - os: "macos-14"
+            arch: amd64
+            out: unansi
+          - os: "macos-13"
             arch: amd64
             out: unansi
           # - os: "macos-latest-xlarge"
