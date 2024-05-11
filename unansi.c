@@ -2,7 +2,13 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+
+#ifdef _WIN32
+# define WIN32_LEAN_AND_MEAN
+# include <windows.h>
+#else
+# include <unistd.h>
+#endif
 
 #define HALF_BUF_SIZE (4096 * 4)
 #define BUF_SIZE (HALF_BUF_SIZE * 2)
