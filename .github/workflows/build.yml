@@ -5,6 +5,7 @@ on:
     branches: ["*"]
 
 jobs:
+
   build_windows:
     runs-on: ["windows-latest"]
     steps:
@@ -12,6 +13,7 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Build
         run: "cl /Wall /link /out:unansi.exe"
+
   build_linux:
     runs-on: ["ubuntu-latest"]
     steps:
