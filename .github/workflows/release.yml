@@ -39,7 +39,7 @@ jobs:
         run: |
           clang -Wall -O3 -fprofile-generate unansi.c -o ${{ matrix.out }}
           ./benchmark.sh
-          llvm-profdata merge -output=default.profdata *.profraw
+          xcrun llvm-profdata merge -output=default.profdata *.profraw
           clang -Wall -O3 -fprofile-use unansi.c -o ${{ matrix.out }}
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2

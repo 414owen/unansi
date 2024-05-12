@@ -23,11 +23,11 @@ count() {
 }
 
 run() {
-  bytes=$(count "$1" "$2")
+  bytes="$(count "$1" "$2")"
   echo "bytes: $(fmt_bytes "${bytes}")"
   echo "First line of input: $1"$'\033[0m'
   echo "First line of output: $(echo "$1" | ./unansi)"
-  seconds="$(yes "$1" | head -n "$2" | command time -f '%e' ./unansi 2>&1 > /dev/null)"
+  seconds="$(yes "$1" | head -n "$2" | { command time -p ./unansi 2>&1 > /dev/null; } | grep real | awk '{print $2}')"
   echo "Took ${seconds}s"
   throughput="$(bc <<< "$(bc -l <<< "${bytes}/${seconds}") / 1")"
   echo "$(fmt_bytes "${throughput}")/s"
