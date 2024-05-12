@@ -58,9 +58,6 @@ write_out(struct state *restrict state, size_t start) {
     // This branch avoids the excess buffering of using stdout as a
     // FILE*, generally in the cases where there's lots of input with
     // no ANSI codes.
-    // I've tried making the `fflush` conditional on a `dirty` flag,
-    // but that seems to have no effect on performance. Presumably
-    // this is happening under the hood anyway.
     maybe_flush(state);
     size_t written = 0;
     size_t amt = state->offset - start;

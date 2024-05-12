@@ -20,9 +20,11 @@ $ <something> | ./unansi
 
 ## Performance
 
-With escapes: ~570MiB/s  
-Without escapes: ~1.55GiB/s
+With escapes: ~727MiB/s  
+Without escapes: ~1.36GiB/s
 
-Benchmarks performed on a laptop with a AMD Ryzen 5 5625U.  
-This is running through a shell pipeline with multiple stages.  
+Benchmarks were performed on a laptop with an AMD Ryzen 5 5625U.  
+They were run multiple times, and the best result was taken.  
+This is running through a shell pipeline with multiple stages,  
+so the real throughput is probably better than the benchmarks say.  
 See benchmark.sh for details.
