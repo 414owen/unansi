@@ -16,6 +16,7 @@
 struct state {
   size_t offset;
   size_t amt;
+  bool dirty;
   char buffer[BUF_SIZE];
   int stdin_fd;
   int stdout_fd;
@@ -31,6 +32,14 @@ fill_buffer(struct state *restrict state) {
 }
 
 static inline void
+maybe_flush(struct state *restrict state) {
+  if (state->dirty) {
+    fflush(stdout);
+    state->dirty = false;
+  }
+}
+
+static inline void
 write_out(struct state *restrict state, size_t start) {
   if (state->offset - start >= HALF_BUF_SIZE) {
     // This branch avoids the excess buffering of using stdout as a
@@ -39,10 +48,11 @@ write_out(struct state *restrict state, size_t start) {
     // I've tried making the `fflush` conditional on a `dirty` flag,
     // but that seems to have no effect on performance. Presumably
     // this is happening under the hood anyway.
-    fflush(stdout);
+    maybe_flush(state);
     write(state->stdout_fd, &state->buffer[start], state->offset - start);
   } else {
     fwrite(&state->buffer[start], 1, state->offset - start, stdout);
+    state->dirty = true;
   }
 }
 
@@ -55,7 +65,7 @@ int main(void) {
   };
 
 start_normal_chunk:
-  fflush(stdout);
+  maybe_flush(&state);
   fill_buffer(&state);
 start_normal:
   {
@@ -81,7 +91,7 @@ start_normal:
   }
 
 start_escape_chunk:
-  fflush(stdout);
+  maybe_flush(&state);
   fill_buffer(&state);
 start_escape:
   for (; state.offset < state.amt; state.offset++) {
