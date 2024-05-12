@@ -13,7 +13,7 @@ jobs:
       - name: Build
         run: "cl /Wall unansi.c /link /out:unansi.exe"
 
-  build_linux:
+  build_posix:
     strategy:
       matrix:
         os: 

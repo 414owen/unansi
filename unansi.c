@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,11 +17,19 @@
 #if defined(__GNUC__) || defined(__clang__)
 # define UNLIKELY(x)     (__builtin_expect(!!(x),false))
 # define LIKELY(x)       (__builtin_expect(!!(x),true))
-# define fwrite          fwrite_unlocked
-# define fflush          fflush_unlocked
 #else
 # define UNLIKELY(x)     (x)
 # define LIKELY(x)       (x)
+#endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+# define fwrite          fwrite_unlocked
+# define fflush          fflush_unlocked
+#endif
+
+#if defined(_MSC_VER)
+// Only used in `write` calls
+# define ssize_t int
 #endif
 
 struct state {
@@ -64,6 +73,9 @@ write_out(struct state *restrict state, size_t start) {
     do {
       ssize_t res = write(state->stdout_fd, &state->buffer[start], amt);
       if (UNLIKELY(res < 0)) {
+        if (errno == EINTR) {
+          continue;
+        }
         perror("Can't write data out");
         exit(1);
       } else {
