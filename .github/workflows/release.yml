@@ -31,9 +31,9 @@ jobs:
       - name: Build
         if: runner.os == 'Linux'
         run: |
-          gcc -Wall -O3 -fprofile-generate unansi.c -o ${{ matrix.out }}
+          gcc -Wall -O3 -falign-labels=8 -fprofile-generate unansi.c -o ${{ matrix.out }}
           ./benchmark.sh
-          gcc -Wall -O3 -fprofile-use unansi.c -o ${{ matrix.out }}
+          gcc -Wall -O3 -falign-labels=8 -fprofile-use unansi.c -o ${{ matrix.out }}
       - name: Build
         if: runner.os == 'MacOS'
         run: |

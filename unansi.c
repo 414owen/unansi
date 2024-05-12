@@ -82,7 +82,6 @@ int main(void) {
   };
 
 start_normal_chunk:
-  maybe_flush(&state);
   fill_buffer(&state);
 start_normal:
   {
@@ -108,7 +107,6 @@ start_normal:
   }
 
 start_escape_chunk:
-  maybe_flush(&state);
   fill_buffer(&state);
 start_escape:
   for (; state.offset < state.amt; state.offset++) {
