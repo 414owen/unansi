@@ -29,8 +29,18 @@ jobs:
         if: runner.os == 'Windows'
         run: "cl /Wall /O2 unansi.c /link /out:${{ matrix.out }}"
       - name: Build
-        if: runner.os != 'Windows'
-        run: "cc -Wall -O2 unansi.c -o ${{ matrix.out }}"
+        if: runner.os == 'Linux'
+        run: |
+          gcc -Wall -O3 -fprofile-generate unansi.c -o ${{ matrix.out }}
+          ./benchmark.sh
+          gcc -Wall -O3 -fprofile-use unansi.c -o ${{ matrix.out }}
+      - name: Build
+        if: runner.os == 'MacOS'
+        run: |
+          clang -Wall -O3 -fprofile-generate unansi.c -o ${{ matrix.out }}
+          ./benchmark.sh
+          llvm-profdata merge -output=default.profdata *.profraw
+          clang -Wall -O3 -fprofile-use unansi.c -o ${{ matrix.out }}
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
