@@ -1,5 +1,7 @@
 # unansi
 
+<img src="./logo.svg" height="100px">
+
 ![language:c99](https://img.shields.io/badge/language-c99-yellow)
 ![GitHub Release](https://img.shields.io/github/v/release/414owen/unansi)
 ![GitHub License](https://img.shields.io/github/license/414owen/unansi)
